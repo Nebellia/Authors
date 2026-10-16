@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Авторы сериала</title>
+<style>
+:root{
+  --bg:#f5f6fa;--panel:#fff;--text:#1d2130;--muted:#6b7285;--line:#e3e6ef;
+  --accent:#4f6df5;--accent-soft:#e8ecff;--chip:#eef0f6;--hover:#f0f3ff;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){
+  --bg:#12141b;--panel:#1a1d27;--text:#e7e9f2;--muted:#8d94a8;--line:#2a2e3c;
+  --accent:#7c92ff;--accent-soft:#252b4a;--chip:#252937;--hover:#212638;}}
+:root[data-theme=dark]{
+  --bg:#12141b;--panel:#1a1d27;--text:#e7e9f2;--muted:#8d94a8;--line:#2a2e3c;
+  --accent:#7c92ff;--accent-soft:#252b4a;--chip:#252937;--hover:#212638;}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{display:flex;align-items:center;gap:16px;padding:12px 20px;background:var(--panel);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5;flex-wrap:wrap}
+header h1{font-size:18px;margin:0;font-weight:650}
+header .stats{color:var(--muted);font-size:13px;flex:1}
+.tabs{display:flex;gap:4px;background:var(--chip);padding:3px;border-radius:10px}
+.tabs button{border:0;background:none;color:var(--muted);padding:6px 14px;border-radius:8px;font:inherit;cursor:pointer}
+.tabs button.on{background:var(--panel);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+#theme{border:1px solid var(--line);background:var(--panel);color:var(--text);border-radius:8px;padding:6px 10px;cursor:pointer;font:inherit}
+main{display:grid;grid-template-columns:340px 1fr;height:calc(100% - 59px)}
+aside{border-right:1px solid var(--line);background:var(--panel);display:flex;flex-direction:column;min-height:0}
+.tools{padding:12px;display:flex;flex-direction:column;gap:8px;border-bottom:1px solid var(--line)}
+input[type=search],select{width:100%;padding:9px 12px;border:1px solid var(--line);border-radius:9px;background:var(--bg);color:var(--text);font:inherit}
+input:focus,select:focus{outline:2px solid var(--accent);outline-offset:-1px}
+.list{overflow:auto;flex:1}
+.item{display:flex;justify-content:space-between;gap:8px;align-items:center;padding:9px 14px;cursor:pointer;border-left:3px solid transparent}
+.item:hover{background:var(--hover)}
+.item.on{background:var(--accent-soft);border-left-color:var(--accent)}
+.item>div{min-width:0}.item .n{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.item .sub{color:var(--muted);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.badge{background:var(--chip);color:var(--muted);border-radius:99px;padding:1px 9px;font-size:12px;white-space:nowrap}
+section.view{overflow:auto;padding:24px 28px 60px;min-height:0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin-bottom:16px}
+.hero h2{margin:0 0 6px;font-size:24px}
+.roles{display:flex;gap:6px;flex-wrap:wrap}
+.role{border:1px solid var(--line);border-radius:99px;padding:3px 11px;font-size:13px;background:var(--chip);color:var(--text);cursor:pointer}
+.role:hover{border-color:var(--accent)}
+details.card>summary{cursor:pointer;font-weight:600;font-size:16px;list-style:none;display:flex;justify-content:space-between;align-items:center}
+details.card>summary::-webkit-details-marker{display:none}
+details.card>summary::before{content:"▸";color:var(--muted);margin-right:8px;transition:transform .15s}
+details[open].card>summary::before{transform:rotate(90deg)}
+details.card>summary .l{flex:1}
+.eps{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:4px 16px;margin-top:12px}
+.ep{display:flex;gap:10px;padding:4px 6px;border-radius:7px;cursor:pointer}
+.ep:hover{background:var(--hover)}
+.ep b{color:var(--accent);font-variant-numeric:tabular-nums;min-width:2.4em;font-weight:600}
+.empty{color:var(--muted);text-align:center;padding:60px 20px}
+.crumb{color:var(--muted);font-size:13px;margin-bottom:4px}
+.person{display:inline-block;margin:3px 6px 3px 0;padding:3px 11px;background:var(--chip);border-radius:99px;cursor:pointer;font-size:14px}
+.person:hover{background:var(--accent-soft)}
+.person small{color:var(--muted)}
+mark{background:#ffe066;color:#222;border-radius:3px;padding:0 1px}
+@media (max-width:760px){
+  main{grid-template-columns:1fr;height:auto}
+  aside{max-height:45vh}
+  section.view{padding:16px}
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>🌀 Авторы сериала</h1>
+  <div class="stats" id="stats">Загрузка…</div>
+  <div class="tabs" id="tabs">
+    <button data-m="authors" class="on">Авторы</button>
+    <button data-m="eps">Серии</button>
+  </div>
+  <button id="theme" title="Сменить тему">🌓</button>
+</header>
+<main>
+  <aside>
+    <div class="tools">
+      <input type="search" id="q" placeholder="Поиск…" autocomplete="off">
+      <select id="roleSel"></select>
+      <select id="sort"></select>
+    </div>
+    <div class="list" id="list"></div>
+  </aside>
+  <section class="view" id="view"></section>
+</main>
+
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const plural = (n, f) => { const a=n%100, b=n%10; return n+' '+(a>10&&a<15?f[2]:b==1?f[0]:b>1&&b<5?f[1]:f[2]); };
+const hl = (t, q) => {
+  t = esc(t); if (!q) return t;
+  const i = t.toLowerCase().indexOf(esc(q).toLowerCase());
+  return i<0 ? t : t.slice(0,i)+'<mark>'+t.slice(i,i+esc(q).length)+'</mark>'+t.slice(i+esc(q).length);
+};
+
+let DATA, authors = [], episodes = new Map(); // episodes: key -> {series,num,title,people:[{a,role}]}
+let mode = 'authors', sel = null, selEp = null;
+
+async function init() {
+  try { DATA = await (await fetch('authors_reverted_data.json')).json(); }
+  catch (e) {
+    $('#view').innerHTML = '<div class="empty">Не удалось загрузить <code>authors_reverted_data.json</code>.<br>Откройте страницу через сервер (github.io или <code>python -m http.server</code>), а не через file://</div>';
+    $('#stats').textContent = 'Ошибка загрузки'; return;
+  }
+  for (const [name, roles] of Object.entries(DATA)) {
+    let total = new Set(), rolesList = [];
+    for (const [role, series] of Object.entries(roles)) {
+      let cnt = 0;
+      for (const [sname, eps] of Object.entries(series)) for (const [num, title] of Object.entries(eps)) {
+        cnt++; total.add(sname+'|'+num);
+        const k = sname+'|'+num;
+        if (!episodes.has(k)) episodes.set(k, {series:sname, num, title, people:[]});
+        episodes.get(k).people.push({a:name, role});
+      }
+      rolesList.push({role, cnt});
+    }
+    authors.push({name, roles:rolesList, total:total.size});
+  }
+  const allRoles = [...new Set(authors.flatMap(a => a.roles.map(r => r.role)))].sort((x,y)=>x.localeCompare(y,'ru'));
+  $('#roleSel').innerHTML = '<option value="">Все роли</option>' + allRoles.map(r => `<option>${esc(r)}</option>`).join('');
+  $('#stats').textContent = `${plural(authors.length,['автор','автора','авторов'])} · ${plural(episodes.size,['серия','серии','серий'])} · ${plural(allRoles.length,['роль','роли','ролей'])}`;
+  const h = decodeURIComponent(location.hash.slice(1));
+  if (h && DATA[h]) sel = h;
+  setMode('authors');
+}
+
+function setMode(m) {
+  mode = m;
+  document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.m === m));
+  $('#q').placeholder = m==='authors' ? 'Поиск автора…' : 'Поиск серии (номер или название)…';
+  $('#roleSel').style.display = m==='authors' ? '' : 'none';
+  $('#sort').innerHTML = m==='authors'
+    ? '<option value="name">По имени</option><option value="count">По числу серий</option>'
+    : '<option value="num">По номеру</option><option value="count">По числу участников</option>';
+  $('#q').value = '';
+  renderList(); renderView();
+}
+
+function renderList() {
+  const q = $('#q').value.trim().toLowerCase(), sort = $('#sort').value;
+  let html = '';
+  if (mode === 'authors') {
+    const role = $('#roleSel').value;
+    let arr = authors.filter(a => (!q || a.name.toLowerCase().includes(q)) && (!role || a.roles.some(r => r.role === role)));
+    arr.sort(sort==='count' ? (a,b)=>b.total-a.total || a.name.localeCompare(b.name,'ru') : (a,b)=>a.name.localeCompare(b.name,'ru'));
+    html = arr.map(a => `<div class="item ${a.name===sel?'on':''}" data-id="${esc(a.name)}">
+      <div style="min-width:0"><div class="n">${hl(a.name,q)}</div><div class="sub">${esc(a.roles.map(r=>r.role).join(', '))}</div></div>
+      <span class="badge">${a.total}</span></div>`).join('');
+    if (!arr.length) html = '<div class="empty">Никого не найдено</div>';
+  } else {
+    let arr = [...episodes.entries()].filter(([k,e]) => !q || e.title.toLowerCase().includes(q) || e.num.includes(q));
+    arr.sort(sort==='count' ? (a,b)=>b[1].people.length-a[1].people.length || a[0].localeCompare(b[0]) : (a,b)=>a[0].localeCompare(b[0],'ru',{numeric:true}));
+    html = arr.map(([k,e]) => `<div class="item ${k===selEp?'on':''}" data-id="${esc(k)}">
+      <div class="n"><b style="color:var(--accent)">${esc(e.num)}</b>&nbsp; ${hl(e.title,q)}</div>
+      <span class="badge">${e.people.length}</span></div>`).join('');
+    if (!arr.length) html = '<div class="empty">Ничего не найдено</div>';
+  }
+  $('#list').innerHTML = html;
+}
+
+function renderView() {
+  const v = $('#view');
+  if (mode === 'authors') {
+    const a = authors.find(x => x.name === sel);
+    if (!a) { v.innerHTML = '<div class="empty">Выберите автора слева 👈</div>'; return; }
+    const roles = DATA[a.name];
+    v.innerHTML = `<div class="card hero"><h2>${esc(a.name)}</h2>
+      <div style="color:var(--muted);margin-bottom:10px">${plural(a.total,['серия','серии','серий'])} · ${plural(a.roles.length,['роль','роли','ролей'])}</div>
+      <div class="roles">${a.roles.map(r=>`<span class="role" data-jump="${esc(r.role)}">${esc(r.role)} · ${r.cnt}</span>`).join('')}</div></div>` +
+      Object.entries(roles).map(([role, series], i) => Object.entries(series).map(([sn, eps]) => `
+        <details class="card" id="r-${i}" data-role="${esc(role)}" open>
+          <summary><span class="l">${esc(role)} <span style="color:var(--muted);font-weight:400">· ${esc(sn)}</span></span><span class="badge">${Object.keys(eps).length}</span></summary>
+          <div class="eps">${Object.entries(eps).map(([n,t]) => `<div class="ep" data-ep="${esc(sn+'|'+n)}"><b>${esc(n)}</b><span>${esc(t)}</span></div>`).join('')}</div>
+        </details>`).join('')).join('');
+  } else {
+    const e = episodes.get(selEp);
+    if (!e) { v.innerHTML = '<div class="empty">Выберите серию слева 👈</div>'; return; }
+    const byRole = {};
+    e.people.forEach(p => (byRole[p.role] ||= []).push(p.a));
+    v.innerHTML = `<div class="card hero"><div class="crumb">${esc(e.series)}</div><h2>${esc(e.num)}. ${esc(e.title)}</h2>
+      <div style="color:var(--muted)">${plural(e.people.length,['участник','участника','участников'])}</div></div>` +
+      Object.entries(byRole).sort((a,b)=>b[1].length-a[1].length).map(([role, names]) => `
+        <div class="card"><div style="font-weight:600;margin-bottom:8px">${esc(role)}</div>
+        ${names.sort((x,y)=>x.localeCompare(y,'ru')).map(n=>`<span class="person" data-a="${esc(n)}">${esc(n)}</span>`).join('')}</div>`).join('');
+  }
+  v.scrollTop = 0;
+}
+
+function pickAuthor(n) { sel = n; history.replaceState(null,'','#'+encodeURIComponent(n)); renderList(); renderView(); }
+function gotoEp(k) { setMode('eps'); selEp = k; renderList(); renderView(); $('#list .item.on')?.scrollIntoView({block:'center'}); }
+
+$('#tabs').onclick = e => { const b = e.target.closest('button'); if (b) setMode(b.dataset.m); };
+$('#q').oninput = renderList;
+$('#roleSel').onchange = $('#sort').onchange = renderList;
+$('#list').onclick = e => {
+  const it = e.target.closest('.item'); if (!it) return;
+  if (mode==='authors') pickAuthor(it.dataset.id); else { selEp = it.dataset.id; renderList(); renderView(); }
+};
+$('#view').onclick = e => {
+  const ep = e.target.closest('[data-ep]'); if (ep) return gotoEp(ep.dataset.ep);
+  const p = e.target.closest('[data-a]');
+  if (p) { setMode('authors'); return pickAuthor(p.dataset.a), $('#list .item.on')?.scrollIntoView({block:'center'}); }
+  const r = e.target.closest('[data-jump]');
+  if (r) document.querySelector(`details[data-role="${CSS.escape(r.dataset.jump)}"]`)?.scrollIntoView({behavior:'smooth'});
+};
+$('#theme').onclick = () => {
+  const r = document.documentElement, dark = matchMedia('(prefers-color-scheme:dark)').matches;
+  const cur = r.dataset.theme || (dark ? 'dark' : 'light');
+  r.dataset.theme = cur === 'dark' ? 'light' : 'dark';
+};
+init();
+</script>
+</body>
+</html>
